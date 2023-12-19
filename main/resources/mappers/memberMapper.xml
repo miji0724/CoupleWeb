@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace는 반드시 DAO인터페이스와 이름이 일치해야 한다. -->
+<mapper namespace="kr.couple.web.dao.MemberDAO">
+	<!-- 매퍼파일에 태그 1개당 DAO인터페이스의 메서드 1개를 만든다. -->
+	<!-- SQL명령 1개당 태그 1개씩을 추가한다. -->
+
+	<!-- 1. 전체 개수 얻기 -->
+	<select id="selectCount" resultType="int">
+		select count(*) from member
+	</select>
+
+	<!-- 2. 지정 아이디의 개수 얻기 : 아이디 중복 확인 처리 -->
+	<select id="selectByMemberIdCount" parameterType="string" resultType="int">
+		select count(*) from member where shared_id=#{shared_id}
+	</select>
+	
+	<!-- 2.1. 지정 이메일1의 개수 얻기 : 이메일 중복 확인 처리 -->
+	<select id="selectByEmail1Count" parameterType="string" resultType="int">
+		select count(*) from member where email1=#{email1}
+	</select>
+	<!-- 2.2. 지정 이메일2의 개수 얻기 : 이메일 중복 확인 처리 -->
+	<select id="selectByEmail2Count" parameterType="string" resultType="int">
+		select count(*) from member where email2=#{email2}
+	</select>
+	
+	
+	<!-- 3. 1개 가져오기 :로그인 -->
+	<select id="selectByMemberId" parameterType="string" resultType="MemberVO">
+		select * from member where shared_id=#{shared_id}
+	</select>	
+	
+	<!-- 3.1. 멤버이름 -->
+	<select id="selectByMember_name" parameterType="MemberVO" resultType="MemberVO" >
+		select * from member where (member_name1=#{member_name1} and email1=#{email1}) or (member_name2=#{member_name1} and email2=#{email1})
+	</select>
+	
+	
+	<!-- 4. 전체가져오기 : 관리자가 회원 목록보기(나중에 조건별, 페이징 처리) -->
+	<select id="selectByList" resultType="MemberVO">
+		select * from member
+	</select>
+	
+	<!-- 5. 저장 -->
+	<insert id="insert" parameterType="MemberVO">
+		INSERT INTO MEMBER VALUES 
+		(#{shared_id},#{shared_password},#{member_name1},
+		  #{email1},#{birth1},#{member_name2},#{email2},#{birth2},#{firstDay})
+	</insert>
+	
+	<!-- 6. 수정 -->
+	<update id="update"  parameterType="MemberVO">
+		update 
+			member
+		set
+			shared_password = #{shared_password}, member_name1 = #{member_name1}, 
+			member_name2=#{member_name2},email1=#{email1},email2=#{email2}
+		where
+			shared_id=#{shared_id}
+	</update>
+	
+	<!-- 7. 삭제 -->
+	<delete id="deleteId" parameterType="string">
+		delete from member where shared_id = #{shared_id}
+	</delete>
+	
+	<!-- 8. 임시 비밀번호로 고치기 -->
+	<update id="updatePassword"  parameterType="hashmap">
+		update member set shared_password=#{shared_password} where shared_id=#{shared_id}
+	</update>
+</mapper>

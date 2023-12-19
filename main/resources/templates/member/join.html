@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원 가입 페이지</title>
+<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+<style type="text/css">
+	#info {
+		width: 50%;
+		padding: 20px;
+		margin: auto;
+		border: 1px solid black;
+		margin-bottom: 10px;
+		font-size: 13pt;
+		border-radius: 20px;
+		color: rgb(0, 0, 0);
+		vertical-align: middle;
+	}
+	table {
+		width: 90%; 
+		margin: auto;
+		border: none; 
+		padding:5px;
+
+	}
+	.title {
+		 width: 100%; 
+		 background-color:  rgb(255, 230, 230);  
+		 color: rgb(0, 0, 0);
+		 font-size: 18pt; 
+		 text-align: center; 
+		 padding: 5px;
+		 
+	}
+
+	td {
+		padding: 10px;
+		
+	}
+	
+	
+
+
+</style>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+	$(function(){
+		// 아이디 중복확인
+		// keyup 이벤트 지정
+		$("#shared_id").keyup(function(){
+			// 현재 값 읽기
+			let value = $(this).val();
+			// 입력한 아이디가 4글자 이상일때 중복처리
+			if(value!=null && value.length>=4){
+				// Ajax로 아이디 중복을 호출하여 처리를 한다.
+				axios.get('/api/count/' + value)
+				  .then(function (response) {
+				    // 성공 핸들링
+				    console.log(JSON.stringify(response));
+				    // alert("성공 : " + response.data)
+				    if(response.data==0){
+						$("#message").css('color', 'blue').html('사용가능한 아이디 입니다.');
+					}else{
+						$("#message").css('color', 'red').html('사용 불가능한 아이디 입니다.');
+					}
+				  })
+				  .catch(function (error) {
+				    // 에러 핸들링
+				    console.log(error);
+				    alert("에러발생 : " + error)
+				  })
+				  .finally(function () {
+				    // 항상 실행되는 영역
+				  });
+			}else{
+				$("#message").css('color', 'black').html(""); // 4자 미만이면 메세지 삭제
+			}
+		});
+	});
+	$(function(){
+		// 이메일 중복확인
+		// keyup 이벤트 지정
+		$("#email1").keyup(function(){
+			// 현재 값 읽기
+			let email1 = $(this).val();
+			// 입력한 아이디가 4글자 이상일때 중복처리
+			if(email1!=null && email1.length>=4){
+				// Ajax로 아이디 중복을 호출하여 처리를 한다.
+				axios.get('/api/count/email1/' + email1)
+				  .then(function (response) {
+				    // 성공 핸들링
+				    console.log(JSON.stringify(response));
+				    // alert("성공 : " + response.data)
+				    if(response.data==0){
+						$("#message1").css('color', 'blue').html('사용가능한 이메일 입니다.');
+					}else{
+						$("#message1").css('color', 'red').html('이미 존재하는 이메일 입니다.');
+					}
+				  })
+				  .catch(function (error) {
+				    // 에러 핸들링
+				    console.log(error);
+				    alert("에러발생 : " + error)
+				  })
+				  .finally(function () {
+				    // 항상 실행되는 영역
+				  });
+			}else{
+				$("#message1").css('color', 'black').html(""); // 4자 미만이면 메세지 삭제
+			}
+		});
+	});
+
+	$(function(){
+		// 이메일 중복확인
+		// keyup 이벤트 지정
+		$("#email2").keyup(function(){
+			// 현재 값 읽기
+			let email2 = $(this).val();
+			// 입력한 아이디가 4글자 이상일때 중복처리
+			if(email2!=null && email2.length>=4){
+				// Ajax로 아이디 중복을 호출하여 처리를 한다.
+				axios.get('/api/count/email2/' + email2)
+				  .then(function (response) {
+				    // 성공 핸들링
+				    console.log(JSON.stringify(response));
+				    // alert("성공 : " + response.data)
+				    if(response.data==0){
+						$("#message2").css('color', 'blue').html('사용가능한 이메일 입니다.');
+					}else{
+						$("#message2").css('color', 'red').html('이미 존재하는 이메일 입니다.');
+					}
+				  })
+				  .catch(function (error) {
+				    // 에러 핸들링
+				    console.log(error);
+				    alert("에러발생 : " + error)
+				  })
+				  .finally(function () {
+				    // 항상 실행되는 영역
+				  });
+			}else{
+				$("#message2").css('color', 'black').html(""); // 4자 미만이면 메세지 삭제
+			}
+		});
+	});
+	
+
+	// 폼체크
+	function formCheck(){
+		let value = $("#shared_id").val();
+		if(value==null || value.trim().length==0){
+			alert("아이디는 반드시 입력해야 합니다.");
+			$("#shared_id").val("");
+			$("#shared_id").focus();
+			return false;
+		}
+		if(value.indexOf(" ")>0){
+			alert("아이디에는 공백을 포함할 수 없습니다.");
+			$("#shared_id").val("");
+			$("#shared_id").focus();
+			return false;
+		}
+		value = $("#shared_password").val();
+		if(value==null || value.trim().length==0){
+			alert("비밀번호는 반드시 입력해야 합니다.");
+			$("#shared_password").val("");
+			$("#shared_password").focus();
+			return false;
+		}
+		value = $("#member_name1").val();
+		if(value==null || value.trim().length==0){
+			alert("사용자 이름은 반드시 입력해야 합니다.");
+			$("#member_name1").val("");
+			$("#member_name1").focus();
+			return false;
+		}
+		value = $("#member_name2").val();
+		if(value==null || value.trim().length==0){
+			alert("사용자 이름은 반드시 입력해야 합니다.");
+			$("#member_name2").val("");
+			$("#member_name2").focus();
+			return false;
+		}
+		value = $("#email1").val();
+		if(value==null || value.trim().length==0){
+			alert("이메일 주소는 반드시 입력해야 합니다.");
+			$("#email1").val("");
+			$("#email1").focus();
+			return false;
+		}
+		value = $("#email2").val();
+		if(value==null || value.trim().length==0){
+			alert("이메일 주소는 반드시 입력해야 합니다.");
+			$("#email2").val("");
+			$("#email2").focus();
+			return false;
+		}
+		if(CheckEmail(value)){
+			alert("이메일 주소 형식이 틀립니다.");
+			$("#email1").val("");
+			$("#email1").focus();
+			$("#email2").val("");
+			$("#email2").focus();
+			return false;
+		}
+		if($("#message").css('color')!='rgb(0, 0, 255)'){
+			alert('아이디 중복확인을 다시하세요!!!');
+			$("#shared_id").val("");
+			$("#shared_id").focus();
+			return false;
+		};
+		if($("#message1").css('color')!='rgb(0, 0, 255)'){
+			alert('이메일 중복확인을 다시하세요!!!');
+			$("#email1").val("");
+			$("#email1").focus();
+			return false;
+		};
+		if($("#message2").css('color')!='rgb(0, 0, 255)'){
+			alert('이메일 중복확인을 다시하세요!!!');
+			$("#email2").val("");
+			$("#email2").focus();
+			return false;
+		};
+			
+		alert("회원가입이 완료되었습니다.");
+		return true;
+	}
+	
+	
+	// 이메일이 잘못되었는지 확인하는 함수 
+	function CheckEmail(str){                                                 
+	    let regex = new RegExp("([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$");
+	    return !regex.test(str);     
+	}
+</script>
+</head>
+<body>
+	<div id="info">
+		<form action="/member/joinOk" method="post" onsubmit="return formCheck()">
+		<table>
+			<div class="title">회원 가입</div>
+			<hr />
+			<tr>
+				<td>
+					<input type="text" id="shared_id" name="shared_id" placeholder="아이디" />
+					<br />
+					<span id="message"></span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="password" id="shared_password" name="shared_password" placeholder="비밀번호" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="member_name1" name="member_name1" placeholder="이름1" />
+				</td>
+				<td>
+					<input type="email" id="email1" name="email1" placeholder="Email Address1" size="40"/>
+					<br />
+					<span id="message1"></span>
+				</td>
+				<td>
+					<label>생년월일1 : </label>
+					<br />
+					<input type="date" id="birth1" name="birth1" required size="30"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="member_name2" name="member_name2" placeholder="이름2" />
+				</td>
+				<td>
+					<input type="email" id="email2" name="email2" placeholder="Email Address2" size="40"/>
+					<br />
+					<span id="message2"></span>
+				</td>
+				<td>
+					<label>생년월일2 :</label> 
+					<br />
+					<input type="date" id="birth2" name="birth2" required size="30"/>
+				</td>
+			</tr>
+			<tr>
+	            <td>
+	               <label>사귄 날짜 :</label>
+	               <input type="date" id="firstDay"  name="firstDay" required size="30" />
+	            </td>
+         	</tr>
+		</table>
+		<hr />
+		<input type="submit" value="회원가입하기" class="btn btn-sm btn-outline-success"/>					
+		<a href="/"  class="btn btn-sm btn-outline-success">Home</a>
+		</form>
+
+	</div>
+</body>
+</html>

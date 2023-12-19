@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>글 내용보기</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+	<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+	<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+	<style>
+		.comment {
+			border: 1px solid gray;
+			padding: 5px;
+			margin: 5px;
+			border-radius: 20px;
+			padding-left: 20px;
+		}
+
+		.comment_title {
+			border: 1px solid gray;
+			background-color: silver;
+			border: silver;
+			padding: 5px;
+			border-radius: 20px;
+			padding-left: 20px;
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="p-2 mb-5 text-center bg-light">
+		<h2 class="mb-3">버킷 리스트 - 내용보기</h2>
+	</div>
+	<div class="container">
+		<input type="text" class="form-control" style="margin-bottom: 3px;" th:value="${vo.member_name}" readonly>
+		<input type="text" class="form-control" style="margin-bottom: 3px;"
+			th:value="${#dates.format(vo.regdate,'작성일 yyyy년 MM월 dd일(E)')}" readonly>
+		<input type="text" class="form-control" style="margin-bottom: 3px;" th:value="${vo.content}" readonly>
+		<section style="text-align: right;">
+			<input type="button" value="수정하기" class="btn btn-sm btn-outline-success"
+				th:onclick="|location.href='@{update(id=${vo.id},p=${bv.p},s=${bv.s},b=${bv.b})}'|" />
+			<input type="button" value="삭제하기" class="btn btn-sm btn-outline-success"
+				th:onclick="|location.href='@{delete(id=${vo.id},p=${bv.p},s=${bv.s},b=${bv.b})}'|" />
+			<input type="button" value="목록으로" class="btn btn-sm btn-outline-success"
+				th:onclick="|location.href='@{bucketList(p=${bv.p},s=${bv.s},b=${bv.b})}'|" />
+		</section>
+
+	</div>
+
+	<script>
+		$(function () {
+			// 취소 버튼을 보이지 않게 한다.
+			$("#resetBtn").css('display', 'none');
+			// submitBtn을 클릭하면
+			$("#submitBtn").click(function () {
+				//alert($(this).val());
+				let buttobTile = $(this).val();
+
+			});
+
+			// 취소 버튼 누르면
+			$("#resetBtn").click(function () {
+				$("#submitBtn").val("댓글 저장");
+				$("#id").val('0');
+				$("#name").val('');
+				$("#password").val('');
+				$("#content").val('');
+				$("#resetBtn").css('display', 'none');
+			});
+
+		});
+		// 수정 버튼 누르면
+		function updateForm(id, name) {
+			// 취소 버튼을 보이게 한다.
+			$("#resetBtn").css('display', 'inline');
+			$("#submitBtn").val("댓글 수정");
+			$("#id").val(id);
+			$("#name").val(name);
+			$("#content").val($("#content" + id).html());
+			$("#password").focus();
+		}
+		// 삭제버튼 누르면
+		function deleteForm(id, name) {
+			// 취소 버튼을 보이게 한다.
+			$("#resetBtn").css('display', 'inline');
+			$("#submitBtn").val("댓글 삭제");
+			$("#id").val(id);
+			$("#name").val(name);
+			$("#content").val($("#content" + id).html());
+			$("#password").focus();
+		}
+
+	</script>
+
+</body>
+
+</html>
