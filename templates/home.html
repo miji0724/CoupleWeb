@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>home</title>
+	<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+	<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+	<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+	<script src="https://kit.fontawesome.com/013ab40b7f.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="/css/homeStyle.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<script src="https://code.jquery.com/jquery-3.7.0.js"
+		integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+		
+	<div id="wrap">
+
+		<header id="header">
+			
+			<div class="header_logo">
+				<a href="/home">
+					<i class="fa-regular fa-heart" style="color: #f55656;"></i>
+				</a>
+			</div>
+			<th:block th:if="${session.mvo!=null}">
+				[[${session.mvo.member_name1}]]❤[[${session.mvo.member_name2}]]님 반갑습니다.
+			</th:block>			
+			<th:block th:if="${session.mvo==null}">
+				손님 반갑습니다.
+			</th:block>	
+
+			
+		</header>
+
+		<content id="content_middle">
+			
+			<span id="prev"><img class="prev" src="/images/flaticon_left.png" alt=""></span>
+
+			<ol id="slider">
+				<li class="on"><img src="/images/pixabay_calendar.jpg" alt="calendar_image"></li>
+				<li><img src="/images/pixabay_picture.jpg" alt="pixture"></li>
+				<li><img src="/images/pixabay_calendar.jpg" alt="calendar_image"></li>
+			</ol>
+
+			<span id="next"><img class="next" src="/images/flaticon_right.png" alt=""></span>
+		
+		</content>
+		<content id="content_bottom">				
+			<th:block th:if="${session.mvo==null}" id="content_bottom">
+				<a class="login" href="/member/login">로그인</a>
+			</th:block>
+			<th:block th:if="${session.mvo!=null}" id="content_bottom">
+				<a class="login" href="/member/logout">로그아웃</a>
+			</th:block>
+		</content>
+
+
+		
+		<div id="bottom">
+			<p>이용약관 | 회사정보 </p>
+		</div>
+	</div>
+		<script>
+			$('#next').click(function () {
+				slideNext();
+			})
+
+			$('#prev').click(function () {
+				slidePrev();
+			})
+
+			function slideNext() {
+
+				if ($('ol li').is(':animated')) {
+					return false;
+				}
+
+				let left = $('li.on').width();
+				let currentIdx = $('li.on').index();
+				let nextIdx = currentIdx + 1;
+
+				if (nextIdx > $('ol li').length - 1) {
+					nextIdx = 0;
+				}
+
+				$('ol li').removeClass('on')
+				$('ol li').eq(currentIdx).css({zIndex: 10})
+				$('ol li').eq(nextIdx).addClass('on').css({
+					left: left,
+					zIndex: 20,
+					display: 'block'
+				}).animate({
+					left: 0
+				}, 800, function () {
+					$('ol li').eq(currentIdx).css({display: 'none'})
+				})
+
+			}
+
+			function slidePrev() {
+
+				if ($('ol li').is(':animated')) {
+					return false;
+				}
+
+				let left = $('li.on').width() * -1;
+				let currentIdx = $('li.on').index();
+				let prevIdx = currentIdx - 1;
+
+				$('ol li').removeClass('on')
+				$('ol li').eq(currentIdx).css({zIndex: 10})
+				$('ol li').eq(prevIdx).addClass('on').css({
+					left: left,
+					zIndex: 20,
+					display: 'block'
+				}).animate({
+					left: 0
+				}, 800, function () {
+					$('ol li').eq(currentIdx).css({display: 'none'})
+				})
+
+			}
+		</script>
+		
+	<div id="info">		
+		<th:block th:if="${session.mvo!=null}">
+			<a th:href='@{/member/calendar(shared_id=${session.mvo.shared_id})}'
+				class="btn btn-sm btn-outline-success">달력보기</a>
+		</th:block>
+		<th:block th:if="${session.mvo!=null}" id="content_bottom">
+			<a href='/member/bucketList' class="btn btn-sm btn-outline-success">버킷 리스트</a>
+		</th:block>
+		<th:block th:if="${session.mvo!=null}">
+			<a th:href='@{/member/dday(shared_id=${session.mvo.shared_id})}'
+				class="btn btn-sm btn-outline-success">D-day</a>
+		</th:block>
+		<th:block th:if="${session.mvo!=null}" id="content_bottom">
+			<a href="" class="btn btn-sm btn-outline-success">회원정보수정</a>
+		</th:block>
+		<th:block th:if="${session.mvo!=null}" id="content_bottom">
+			<a href="/member/deleteId" class="btn btn-sm btn-outline-success">회원탈퇴</a>
+		</th:block>
+		
+		
+	</div>
+	
+	<script src="/js/dday.js"></script>
+</body>
+</html>

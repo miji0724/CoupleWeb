@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>아이디 찾기 페이지</title>
+<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+<style type="text/css">
+	#info {
+		width: 30%;
+		padding: 20px;
+		margin: auto;
+		border: 1px solid gray;
+		margin-bottom: 10px;
+		font-size: 13pt;
+		border-radius: 20px;
+		color: black;
+		display: auto;
+	}
+	table {
+		width: 60%; 
+		margin: auto; 
+		padding:5px; 
+	}
+	.title {
+		width: 100%;
+		background-color: rgb(255, 230, 230); 
+		color: rgb(0, 0, 0);
+		font-size: 18pt; 
+		text-align: center; 
+		padding: 5px;
+		margin: 0 auto;
+	}
+	.loginBtn{
+		width: 130px; 
+		height: 70px; 
+		color: rgb(0, 0, 0); 
+		background-color: rgb(251, 213, 214);
+		border-color: transparent;
+		margin-left: 20px;
+	}
+
+	td {
+		padding: 10px;
+	}
+</style>
+<script>
+	function formCheck(){
+		let value = $("#member_name1").val();
+		if(value==null || value.trim().length<=0){
+			alert("닉네임은  반드시 입력해야 합니다.");
+			$("#member_name1").val("");
+			$("#member_name1").focus( );
+			return false;
+		}
+		
+		value = $("#email1").val();
+		if(value==null || value.trim().length<=0){
+			alert("가입시 이메일은 반드시 입력해야 합니다.");
+			$("#email1").val("");
+			$("#email1").focus( );
+			return false;
+		}
+
+		
+	}
+	
+</script>
+</head>
+<body>
+	<div id="info">
+		<form action="/member/findMemberIdOk" method="post" onsubmit="return formCheck()">
+		<table>
+			<div class="title" colspan="2">아이디 찾기</div>
+			<hr />
+			<tr>
+				<td>
+					<input type="text" id="member_name1" name="member_name1" placeholder="닉네임" size="20" tabindex="1" th:value="${member_name1}"/>
+					<input type="hidden" id="member_name2" name="member_name2" placeholder="닉네임" size="20" tabindex="1" th:value="${member_name2}"/>
+				</td>
+				<td rowspan="2">
+					<input type="submit" value="아이디찾기" class="loginBtn" tabindex="3"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="email1" name="email1" placeholder="가입시 이메일" size="30" tabindex="2" th:value="${email1}" />
+					<input type="hidden" id="email2" name="email2" placeholder="가입시 이메일" size="30" tabindex="2" th:value="${email2}" />
+				</td>
+			</tr>
+		</table>
+		</form>
+		<hr />
+		<a href="/"  class="btn btn-sm btn-outline-success">Home</a>
+	</div>
+</body>
+</html>

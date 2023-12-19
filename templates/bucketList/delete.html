@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<title>글 삭제하기</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+	<style>
+
+	</style>
+
+</head>
+<body>
+	<div class="p-2 mb-5 text-center bg-light">
+        <h2 class="mb-3">버킷리스트 - 글 삭제하기</h2>
+        <h5 class="mb-3" style="color: red;"></h5>
+    </div>
+    <div class="container">
+		<!-- 
+			onsubmit="return formCheck()" : 전송시 formCheck() 함수를 먼저 실행해라. 
+		 	true값이 리턴 될때만 폼전송이 이루어 진다.  
+		 -->
+ 		<form action="deleteOk" method="post" onsubmit="return formCheck()">
+			<input type="hidden" name="p" th:value="${bv.p}">	 
+			<input type="hidden" name="s" th:value="${bv.s}">	 
+			<input type="hidden" name="b" th:value="${bv.b}">	
+			<input type="hidden" name="id" class="form-control" style="margin-bottom: 3px;" th:value="${bucketList.id}" readonly>	 
+			<input type="text" name="member_name" class="form-control" style="margin-bottom: 3px;" th:value="${bucketList.member_name}" readonly>	  
+			<section class="mb-5">
+			<textarea class="form-control h-25" rows="10" placeholder="내용" required id="content" name="content" readonly>[[${bucketList.content}]]</textarea>
+			</section>
+			<section style="text-align: right;">
+				<input type="submit" value="삭제하기" class="btn btn-sm btn-outline-success"/>
+				<input type="button" value="내용보기" class="btn btn-sm btn-outline-success" th:onclick="|location.href='@{bucketListView(id=${bucketList.id},p=${bv.p},s=${bv.s},b=${bv.b})}'|"/>
+				<input type="button" value="목록으로" class="btn btn-sm btn-outline-success" th:onclick="|location.href='@{bucketList(p=${bv.p},s=${bv.s},b=${bv.b})}'|"/>
+			</section>		 
+		</form>
+	</div>                
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>아이디 찾기 확인 페이지</title>
+<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+<style type="text/css">
+	#info {
+		width: 30%;
+		padding: 20px;
+		margin: auto;
+		border: 1px solid gray;
+		margin-bottom: 10px;
+		font-size: 13pt;
+		border-radius: 20px;
+		color: black;
+		display: auto;
+	}
+	table {
+		width: 100%; 
+		margin: auto;
+		padding:5px;
+	}
+	.title {
+		width: 100%;
+		background-color: rgb(255, 230, 230); 
+		color: rgb(0, 0, 0);
+		font-size: 18pt; 
+		text-align: center; 
+		padding: 5px;
+		margin: 0 auto;
+	}
+	td {
+		padding: 10px;
+		text-align: center;
+	}
+</style>
+<script>
+		
+</script>
+</head>
+<body>
+	<div id="info">
+		<table>
+			<div td class="title">아이디 찾기 확인</div>
+			<hr />
+			<tr>
+				<td>
+					[[${vo.member_name1}]]❤[[${vo.member_name2}]]의 아이디는 "<b>[[${vo.shared_id}]]</b>" 입니다. <br />
+					<a href="/member/login"  class="btn btn-sm btn-outline-success">로그인하러 가기</a>
+				</td>
+			</tr>
+		</table>
+		<hr />
+		<a href="/"  class="btn btn-sm btn-outline-success">Home</a>
+	</div>
+</body>
+</html>
