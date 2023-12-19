@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원 탈퇴</title>
+<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+<style type="text/css">
+	#info {
+		width: 30%;
+		padding: 20px;
+		margin: auto;
+		border: 1px solid black;
+		margin-bottom: 10px;
+		font-size: 13pt;
+		border-radius: 20px;
+		color: rgb(0, 0, 0);
+		vertical-align: middle;
+	}
+	table {
+		width: 90%; 
+		margin: 0 auto;
+		border: none; 
+		padding:5px;
+		text-align: center;
+
+	}
+	.title {
+		 width: 100%; 
+		 background-color:  rgb(255, 230, 230);  
+		 color: rgb(0, 0, 0);
+		 font-size: 18pt; 
+		 text-align: center; 
+		 padding: 5px;
+
+		 
+	}
+
+	td {
+		padding: 10px;
+		
+	}
+	
+	
+
+
+</style>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+
+	// 폼체크
+	function formCheck(){
+		let value = $("#shared_id").val();
+		if(value==null || value.trim().length==0){
+			alert("아이디는 반드시 입력해야 합니다.");
+			$("#shared_id").val("");
+			$("#shared_id").focus();
+			return false;
+		}
+		if(value.indexOf(" ")>0){
+			alert("아이디에는 공백을 포함할 수 없습니다.");
+			$("#shared_id").val("");
+			$("#shared_id").focus();
+			return false;
+		}
+		value = $("#shared_password").val();
+		if(value==null || value.trim().length==0){
+			alert("비밀번호는 반드시 입력해야 합니다.");
+			$("#shared_password").val("");
+			$("#shared_password").focus();
+			return false;
+		} ;
+			
+		return true;
+	}
+	
+</script>
+</head>
+<body>
+	<div id="info">
+		<form action="/member/deleteIdOk" method="post" onsubmit="return formCheck()">
+		<table>
+			<div class="title">회원 탈퇴</div>
+			<hr />
+			<tr>
+				<td>
+					<input type="text" id="shared_id" name="shared_id" placeholder="아이디" required />
+					<span id="message"></span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="password" id="shared_password" name="shared_password" placeholder="비밀번호" required />
+				</td>
+			</tr>
+		</table>
+		<hr />
+		<input type="submit" class="btn btn-sm btn-outline-success" value="회원탈퇴" />			
+		<a href="/" class="btn btn-sm btn-outline-success">Home</a>
+		</form>
+
+	</div>
+</body>
+</html>

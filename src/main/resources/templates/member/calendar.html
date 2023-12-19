@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+	<meta charset='utf-8' />
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+	<link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
+	<link rel="stylesheet" type="text/css" href="/js/jquery.datetimepicker.min.css" />
+	<link href="/css/calendar.css" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<script src="/js/jquery.datetimepicker.full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
+	
+	<script src="https://kit.fontawesome.com/013ab40b7f.js" crossorigin="anonymous"></script>
+	
+	<script>
+
+		$(function () {
+			$("#eventForm").hide();
+			$('#startDate').datetimepicker({
+				format: "Y-m-d H:i:00",
+				lang: 'ko'
+			});
+			$('#endDate').datetimepicker({
+				format: "Y-m-d H:i:00",
+				lang: 'ko'
+			});
+		});
+		document.addEventListener('DOMContentLoaded', function () {
+			var calendarEl = document.getElementById('calendar');
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+				themesystem: 'bootstrap',
+				initialView: 'dayGridMonth',
+				selectable: true,
+				editable: true,
+				events: '/api/list2?id=[[${vo.shared_id}]]',
+
+				headerToolbar: {
+					left: 'prevYear,prev,today,next,nextYear',
+					center: 'title',
+					right: ''
+				},
+
+				// 날짜 클릭시 이벤트 저장
+				dateClick: function (event) {
+					console.log(event);
+					console.log(JSON.stringify(event));
+					console.log(event.dateStr);
+					$("#eventForm").show();
+					$("#deleteBtn").hide();
+					$("#updateBtn").html("저장");
+					$("#eventFormTitle").html("event 등록").css(
+						{
+							backgroundColor: 'aliceblue',
+							color: 'black'
+						}
+					);
+					$("#mode").val('insert');
+					$("#title").val("");
+					$("#username").val("");
+					$("#startDate").val(dayjs(event.dateStr).format('YYYY-MM-DD HH:mm'));
+					$("#endDate").val(dayjs(event.dateStr).format('YYYY-MM-DD HH:mm'));
+				},
+				// 이벤트 클릭시 이벤트 수정
+				eventClick: function (event) {
+					console.log(JSON.stringify(event));
+					console.log(JSON.stringify(event.event.backgroundColor));
+					console.log(JSON.stringify(event.el.fcSeg.eventRange.instance.range.start));
+					console.log(typeof (event.el.fcSeg.eventRange.instance.range.start));
+					var start = dayjs(event.event.start);
+					console.log(start.format('YYYY-MM-DD'));
+					var end = dayjs(event.el.fcSeg.eventRange.instance.range.end);
+					console.log(start.format('YYYY-MM-DD'));
+					$("#eventForm").show();
+					$("#deleteBtn").show();
+					$("#updateBtn").html("수정");
+					$("#eventFormTitle").html("event 수정").css(
+						{
+							backgroundColor: 'red',
+							color: 'white'
+						}
+					);
+					$("#id").val(event.event.id);
+					$("#mode").val('update');
+					$("#title").val(event.event.title);
+					$("#username").val(event.event.extendedProps.username);
+					$("#startDate").val(event.event.allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm'));
+					$("#endDate").val(event.event.allDay ? end.format('YYYY-MM-DD') : end.format('YYYY-MM-DD HH:mm'));
+					$("#category").val(event.event.extendedProps.category);
+
+				}
+
+			});
+			calendar.render();
+		});
+
+
+		function closeForm(obj) {
+			$(obj).parent().parent().hide();
+		}
+
+		function updateData(obj) {
+			let id = $("#id").val();
+			let allDay = $("#allDay").prop('checked');
+			let title = $("#title").val();
+			let username = $("#shared_id").val();
+			let startDate = $("#startDate").val();
+			let endDate = $("#endDate").val();
+			let category = $("#category").val();
+			let color = $("#color").val();
+			let mode = $("#mode").val();
+			if (mode == 'insert') {
+				axios.post('/api/events', {
+					"id": id,
+					"allDay": allDay,
+					"title": title,
+					"username": username,
+					"startDate": startDate,
+					"endDate": endDate,
+					"category": category,
+					"color": color
+				}).then(function (response) {
+					// 성공 핸들링
+					location.reload();
+				}).catch(function (error) {
+					// 에러 핸들링
+					console.log(error);
+				}).finally(function () {
+					// 항상 실행되는 영역
+				});
+			} else if (mode == 'update') {
+				axios.put('/api/events/' + id, {
+					"id": id,
+					"allDay": allDay,
+					"title": title,
+					"username": username,
+					"startDate": startDate,
+					"endDate": endDate,
+					"category": category,
+					"color": color
+				}).then(function (response) {
+					alert(id + allDay + title + username + startDate + endDate)
+					location.reload();
+				}).catch(function (error) {
+					// 에러 핸들링
+					console.log(error);
+				}).finally(function () {
+					// 항상 실행되는 영역
+				});
+			}
+		}
+
+		function deleteData(obj) {
+			let id = $("#id").val();
+			axios.delete('/api/events/' + id).then(function (response) {
+				let data = response.data;
+				if (data == null || data == "") alert(id + "번 데이터는 존재하지 않습니다");
+				else alert(data.id + "번 삭제 성공");
+				location.reload();
+			}).catch(function (error) {
+				console.log(error);
+			}).finally(function () {
+
+			});
+		}
+
+	</script>
+
+</head>
+
+<body>
+
+	<header id="header">
+
+		<div class="header_logo">
+			<a href="/">
+				<i class="fa-regular fa-heart" style="color: #f55656;"></i>
+			</a>
+		</div>
+
+		<ul class="header_menu">
+			<li><a href="/">첫페이지</a></li>
+			<div>|</div>
+			<li><a href="/member/bucketList">Bucket List</a></li>
+			<div>|</div>
+			<li><a th:href='@{/member/dday(shared_id=${session.mvo.shared_id})}'>D-day</a></li>
+			<div>|</div>
+			<li><a href="">회원정보</a></li>
+		</ul>
+
+	</header>
+
+	<div id='calendar-box'>
+		<div id='calendar'></div>
+	</div>
+	<div id="anni-box">
+		<div id="anni"></div>
+	</div>
+
+	<div id="eventForm">
+		<div id="eventFormTitle"></div>
+		<input type="hidden" name="id" id="id">
+		<input type="hidden" id="shared_id" name="username" style="margin-bottom: 5px;" th:value="${vo.shared_id}">
+		<input type="hidden" name="mode" id="mode" value="insert" />
+		<div style="margin-left: 3px;">
+			<label>title</label>
+			<input type="text" id="title" name="title" style="margin-bottom: 5px;"><br />
+		</div>
+		<div style="margin-left: 3px;">
+			<label>startDate</label>
+			<input type="text" id="startDate" name="startDate" style="margin-bottom: 5px;"><br />
+		</div>
+		<div style="margin-left: 3px;">
+			<label>endDate</label>
+			<input type="text" id="endDate" name="endDate" style="margin-bottom: 5px;">
+			하루종일 <input type="checkbox" id="allDay" name="allDay" style="margin-bottom: 5px;" value="0"><br />
+		</div>
+		<div style="margin-left: 3px;">
+			<label>category</label>
+			<select name="category" id="category" style="margin-bottom: 5px;">
+				<option value="anniversity">기념일</option>
+				<option value="travel">여행</option>
+				<option value="schedule">일정</option>
+			</select>
+		</div>
+		<div style="margin-left: 3px;">
+			<label>color</label>
+			<select name="color" id="color" style="margin-bottom: 5px;">
+				<option value="#dc143c" style="color:#dc143c;">color1</option>
+				<option value="#ed6335" style="color:#ed6335;">color2</option>
+				<option value="#ffe697" style="color:#ffe697;">color3</option>
+				<option value="#3c8677" style="color:#3c8677;">color4</option>
+				<option value="#a1c4fd" style="color:#a1c4fd;">color5</option>
+				<option value="#0072bb" style="color:#0072bb;">color6</option>
+				<option value="#f2b3bc" style="color:#f2b3bc;">color7</option>
+				<option value="#e2a0ff" style="color:#e2a0ff;">color8</option>
+			</select>
+		</div>
+		<div id="buttonGroup" style="margin-right: 3px;">
+			<button class="btn btn-sm btn-outline-dark" id="updateBtn" onclick="updateData(this)">수정완료</button>
+			<button class="btn btn-sm btn-outline-dark" id="deleteBtn" onclick="deleteData(this)">삭제하기</button>
+			<button onclick="closeForm(this)" class="btn btn-sm btn-outline-dark" id="updateBtn">닫기</button>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!-- Thymeleaf를 사용하겠다. -->
+<html lang="ko" xmlns="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>dday</title>
+	<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+	<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+	<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
+	<link rel="stylesheet" href="/css/dday.css">
+	<script>
+
+	</script>
+	<style>
+
+	</style>
+	<script>
+
+	</script>
+
+</head>
+
+<body>
+
+	<header id="header">
+
+		<div class="header_logo">
+			<a href="/">
+				<i class="fa-regular fa-heart" style="color: #f55656;"></i>
+			</a>
+		</div>
+			
+		<ul class="header_menu">
+			<li><a href="/home">첫페이지</a></li>
+			<div>|</div>
+			<th:block th:if="${session.mvo!=null}">
+			<li><a th:href='@{/member/calendar(shared_id=${session.mvo.shared_id})}' >Calendar</a></li>
+			</th:block>
+			<div>|</div>
+			<li><a href="/member/bucketList" >Bucket List</a></li>
+			<div>|</div>
+			<li><a href="">회원정보</a></li>
+			<th:block th:if="${session.mvo!=null}">
+				[[${session.mvo.member_name1}]]❤[[${session.mvo.member_name2}]]님 반갑습니다.
+			</th:block>
+			<th:block th:if="${session.mvo==null}">
+				손님 반갑습니다.
+			</th:block>
+		</ul>
+
+	</header>
+
+	<div id="box">
+		<div class="day">
+			<div id="top">ෆ First Day, we met ෆ</div>
+			<div id="dday"></div>
+			<input id="firstday" th:value="${#dates.format(vo.firstDay, 'YYYY. MM. dd ~')}" readonly
+				style="border: none;"></input>
+		</div>
+		<div id="days_box">
+			<div class="days" style="margin-top: 15px;">
+				<div class="days_left">
+					<span class="title">100일</span>
+					<span id="day100"></span>
+				</div>
+				<div class="days_right">
+					<span id="days100"></span>
+				</div>
+			</div>
+
+			<div class="days">
+				<div class="days_left">
+					<span class="title">200일</span>
+					<span id="day200"></span>
+				</div>
+				<div class="days_right">
+					<span id="days200"></span>
+
+				</div>
+			</div>
+
+			<div class="days">
+				<div class="days_left">
+					<span class="title">300일</span>
+					<span id="day300"></span>
+				</div>
+				<div class="days_right">
+					<span id="days300"></span>
+				</div>
+			</div>
+
+			<div class="days">
+				<div class="days_left">
+					<span class="title">1주년</span>
+					<span id="day365"></span>
+				</div>
+				<div class="days_right">
+					<span id="days365"></span>
+				</div>
+			</div>
+			<div class="days">
+				<div class="days_left">
+					<span class="title">2주년</span>
+					<span id="day730"></span>
+				</div>
+				<div class="days_right">
+					<span id="days730"></span>
+				</div>
+			</div>
+			<div class="days">
+				<div class="days_left">
+					<span class="title">3주년</span>
+					<span id="day1095"></span>
+				</div>
+				<div class="days_right">
+					<span id="days1095"></span>
+				</div>
+			</div>
+			<div class="days">
+				<div class="days_left">
+					<span class="title">4주년</span>
+					<span id="day1460"></span>
+				</div>
+				<div class="days_right">
+					<span id="days1460"></span>
+				</div>
+			</div>
+			<div class="days">
+				<div class="days_left">
+					<span class="title">5주년</span>
+					<span id="day1825"></span>
+				</div>
+				<div class="days_right">
+					<span id="days1825"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="/js/dday.js"></script>

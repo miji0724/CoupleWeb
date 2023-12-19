@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>새글 등록하기</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+	<style>
+
+	</style>
+
+</head>
+
+<body>
+	<div class="p-2 mb-5 text-center bg-light">
+		<h2 class="mb-3">버킷리스트 - 글쓰기</h2>
+	</div>
+	<div class="container">
+		<!-- 
+			onsubmit="return formCheck()" : 전송시 formCheck() 함수를 먼저 실행해라. 
+		 	true값이 리턴 될때만 폼전송이 이루어 진다.  
+		 -->
+		<form action="insertOk" method="post" onsubmit="return formCheck()">
+			<input type="hidden" name="p" th:value="${bv.p}">
+			<input type="hidden" name="s" th:value="${bv.s}">
+			<input type="hidden" name="b" th:value="${bv.b}">
+			<input type="hidden" name="shared_id" id="shared_id" th:value="${shared_id}">
+			<label>작성자</label>
+			<select type="text" name="member_name" class="form-control" placeholder="이름" id="member_name" required >
+				<option th:each="member_name  : ${member_name_list}" th:value="${member_name}" th:text="${member_name}"></option>
+			</select>
+			
+			<section class="mb-5">
+				<textarea class="form-control h-25" rows="10" placeholder="내용" required id="content"
+					name="content"></textarea>
+			</section>
+
+			<input type="hidden" name="comcheck" id="comcheck" value="1">
+
+			<section style="text-align: right;">
+				<input type="submit" value="저장하기" class="btn btn-sm btn-outline-success" />
+				<input type="button" value="목록으로" class="btn btn-sm btn-outline-success"
+					th:onclick="|location.href='@{list(p=${bv.p},b=${bv.b},s=${bv.s})}'|" />
+			</section>
+		</form>
+	</div>
+
+	<script>
+		function formCheck() {
+			let value = $("#member_name").val(); // 이름 얻고
+			
+			if (value == null || value.trim().length == 0) { // 없거나 빈칸들로만  입력되었다면
+				alert('이름은 반드시 입력해야 합니다.'); // 경고
+				$("#member_name").val(""); // 입력값 삭제
+				$("#member_name").focus(); // 커서 위치
+				return false;   // 전송 취소
+			}
+
+			value = $("#content").val(); // 내용 얻고
+			if (value == null || value.trim().length == 0) { // 없거나 빈칸들로만  입력되었다면
+				alert('내용은 반드시 입력해야 합니다.'); // 경고
+				$("#content").val(""); // 입력값 삭제
+				$("#content").focus(); // 커서 위치
+				return false;   // 전송 취소
+			}
+			
+			return true;
+		}
+
+		function getCheckboxValue() {
+			// 선택된 목록 가져오기
+			const query = 'input[name="animal"]:checked';
+			const selectedEls =
+				document.querySelectorAll(query);
+
+			// 선택된 목록에서 value 찾기
+			let result = '';
+			selectedEls.forEach((el) => {
+				result += el.value + ' ';
+			});
+
+			// 출력
+			document.getElementById('result').innerText
+				= result;
+		}
+
+	</script>
+
+</body>
+
+</html>

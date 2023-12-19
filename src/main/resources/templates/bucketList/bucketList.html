@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>bucketList</title>
+	<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/dist/css/bootstrap.min.css">
+	<script src="/webjars/jquery/3.6.4/dist/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/5.3.0/dist/js/bootstrap.min.js"></script>
+	<script src="/webjars/axios/1.4.0/dist/axios.min.js"></script>
+	<script src="https://kit.fontawesome.com/013ab40b7f.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="/css/bucketList.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.0.js"
+		integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+	<header id="header">
+
+		<div class="header_logo">
+			<a href="/">
+				<i class="fa-regular fa-heart" style="color: #f55656;"></i>
+			</a>
+		</div>
+
+		<ul class="header_menu">
+			<li><a href="/home">첫페이지</a></li>
+			<div>|</div>
+			<li><a th:href='@{/member/calendar(shared_id=${session.mvo.shared_id})}'>Calendar</a></li>
+			<div>|</div>
+			<li><a th:href='@{/member/dday(shared_id=${session.mvo.shared_id})}'>D-day</a></li>
+			<div>|</div>
+			<li><a href="">회원정보</a></li>
+			<th:block th:if="${session.mvo!=null}">
+				[[${session.mvo.member_name1}]]❤[[${session.mvo.member_name2}]]님 반갑습니다.
+			</th:block>
+			<th:block th:if="${session.mvo==null}">
+				손님 반갑습니다.
+			</th:block>
+		</ul>
+
+	</header>
+
+	<div class="bucketList_name">
+		<h2>Bucket List</h2>
+	</div>
+
+	<div id="wrap">
+		<div class="container">
+			<div class="bucketList_title">버킷리스트 미완료</div>
+			<table class="container_context">
+				<tr>
+					<td colspan="7" class="paging">
+						[[${pv.getPageInfo()}]]
+						<select id="cnt" onchange="setCount()">
+							<option value="5" th:selected="${pv.sizeOfPage==5}"> 5개씩 보기</option>
+							<option value="10" th:selected="${pv.sizeOfPage==10}">10개씩 보기</option>
+							<option value="20" th:selected="${pv.sizeOfPage==20}">20개씩 보기</option>
+							<option value="50" th:selected="${pv.sizeOfPage==50}">50개씩 보기</option>
+						</select>
+					</td>
+				</tr>
+				<tr class="container_title">
+					<th>번호</th>
+					<th>작성자</th>
+					<th style="width: 50%;">버킷리스트</th>
+					<th>작성일</th>
+					<th>완료</th>
+				</tr>
+				<!-- 글이 있다면 반복문으로 출력 -->
+				<th:block th:if="${pv.totalCount gt 0}">
+					<tr th:each="vo, vs : ${pv.list}" onmouseover="this.style.backgroundColor='rgb(254, 231, 231)'"
+						onmouseout="this.style.backgroundColor='white'">
+
+						<td>[[${pv.totalCount-(pv.currentPage-1) * pv.sizeOfPage - vs.index}]]</td>
+						<td>[[${vo.Member_name}]]</td>
+						<td>
+							<a
+								th:href="@{/member/view?id={id}(id=${vo.id},p=${pv.currentPage},s=${pv.sizeOfPage},b=${pv.sizeOfBlock})}">
+								[[${vo.content}]]
+							</a>
+						</td>
+						<td>[[${#dates.format(vo.regdate,'MM-dd HH:mm')}]]</td>
+						<td>
+							<div class="check">
+								<input id="check" class="check" type='checkbox' name='bucketList'
+									th:value='${vo.content}' th:onclick="|updateComcheck(${vo.id}, 1)|" />
+								<label for="check1"></label>
+							</div>
+						</td>
+					</tr>
+				</th:block>
+				<tr>
+					<td colspan="7" class="new_box">
+						<button class="btn btn-sm btn-outline-success"
+							th:onclick="|location.href='@{insert(p=${bv.p},b=${bv.b},s=${bv.s})}'|">새글쓰기</button>
+					</td>
+				</tr>
+				<!-- 글이 없다면 반복문으로 출력 -->
+				<th:block th:if="${pv.totalCount eq 0}">
+					<tr>
+						<td colspan="4" style="text-align: center;">등록된 글이 없습니다.</td>
+					</tr>
+				</th:block>
+				<tr>
+					<td colspan="4" style="text-align: right; border: none;">[(${pv.getPageList2()})]</td>
+				</tr>
+
+			</table>
+		</div>
+
+		<!-- 우리가 이뤄낸것들!!!! -->
+		<div class="container">
+			<div class="bucketList_title">버킷리스트 완료</div>
+			<table class="container_context">
+				<tr>
+					<td colspan="7" class="paging">
+						[[${pvb.getPageInfo()}]]
+						<select id="cnt2" onchange="setCount()">
+							<option value="5" th:selected="${pvb.sizeOfPage==5}"> 5개씩 보기</option>
+							<option value="10" th:selected="${pvb.sizeOfPage==10}">10개씩 보기</option>
+							<option value="20" th:selected="${pvb.sizeOfPage==20}">20개씩 보기</option>
+							<option value="50" th:selected="${pvb.sizeOfPage==50}">50개씩 보기</option>
+						</select>
+					</td>
+				</tr>
+				<tr class="container_title">
+					<th>번호</th>
+					<th>작성자</th>
+					<th style="width: 50%;">버킷리스트</th>
+					<th>완료일</th>
+					<th>완료</th>
+				</tr>
+				<!-- 글이 있다면 반복문으로 출력 -->
+				<th:block th:if="${pvb.totalCount gt 0}">
+					<tr th:each="vo, vs : ${pvb.list}" onmouseover="this.style.backgroundColor='rgb(254, 231, 231)'"
+						onmouseout="this.style.backgroundColor='white'">
+
+						<td>[[${pvb.totalCount-(pv.currentPage-1) * pvb.sizeOfPage - vs.index}]]</td>
+						<td>[[${vo.Member_name}]]</td>
+						<td>
+							<a
+								th:href="@{/member/view?id={id}(id=${vo.id},p=${pv.currentPage},s=${pv.sizeOfPage},b=${pv.sizeOfBlock})}">
+								[[${vo.content}]]
+							</a>
+						</td>
+						<td>[[${#dates.format(vo.comdate,'MM-dd HH:mm')}]]</td>
+						<td>
+							<div class="check">
+								<input id="check" class="check" type='checkbox' name='bucketList'
+									th:value='${vo.content}' checked="true"
+									th:onclick="|updateComcheck(${vo.id}, 0)|" />
+								<label for="check1"></label>
+							</div>
+						</td>
+					</tr>
+				</th:block>
+				<!-- 글이 없다면 반복문으로 출력 -->
+				<th:block th:if="${pvb.totalCount eq 0}">
+					<tr>
+						<td colspan="4" style="text-align: center;">등록된 글이 없습니다.</td>
+					</tr>
+				</th:block>
+				<tr>
+					<td colspan="4" style="text-align: right; border: none;">[(${pvb.getPageList2()})]</td>
+				</tr>
+			</table>
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+
+		function setCount() {
+			//alert(document.querySelector("#cnt").value);
+			let size = document.querySelector("#cnt").value;
+			let p = [(${pv.currentPage})];
+			let s = size;
+			let b = [(${pv.sizeOfBlock})];
+
+			let size2 = document.querySelector("#cnt2").value;
+			let pb = [(${pvb.currentPage})];
+			let sb = size2;
+			let bb = [(${pvb.sizeOfBlock})];
+
+			location.href = "?p=" + p + "&s=" + s + "&b=" + b + "&pb=" + pb + "&sb=" + sb + "&bb=" + bb;
+		}
+
+		function updateComcheck(id, value) {
+			console.log("updateComcheck id : ", id);
+			console.log("updateComcheck value : ", value);
+			params = {
+				id: id,
+				comcheck: value
+			}
+			axios.patch('/bucketApi/updateComcheck', params)
+				.then(function (response) {
+					// 성공 핸들링
+
+					if (response.data == 1) {
+						console.log("updateComcheck 성공");
+						setCount();
+					} else {
+						console.log("updateComcheck 실패");
+						alert("버킷리스트 상태 변경에 실패하였습니다.");
+					}
+				})
+				.catch(function (error) {
+					// 에러 핸들링
+					console.log(error);
+					alert("에러발생 : " + error)
+				})
+				.finally(function () {
+					// 항상 실행되는 영역
+				});
+		}
+	</script>
+
+</body>
+
+</html>

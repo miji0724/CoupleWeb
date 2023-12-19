@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  	<!-- namespace는 반드시 DAO인터페이스와 이름이 일치해야 한다. -->
+ 	<mapper namespace="kr.couple.web.dao.EventDAO">
+	<!-- 매퍼파일에 태그 1개당 DAO인터페이스의 메서드 1개를 만든다. -->
+	<!-- SQL명령 1개당 태그 1개씩을 추가한다. -->
+	
+	<!-- 1. 전체 개수 얻기 -->
+    <select id="selectCount" resultType="int">
+      select count(*) from events
+    </select>
+	<!-- 2. 전체 일정 가져오기 -->
+    <select id="selectByList" resultType="EventsVO" parameterType="string">
+	    SELECT 
+			ID ,
+			TITLE ,
+			USERNAME ,
+			CATEGORY ,
+			TO_CHAR(STARTDATE,'YYYY-MM-DD"T"HH24:MI:SS') AS "start", 
+			TO_CHAR(ENDDATE ,'YYYY-MM-DD"T"HH24:MI:SS') AS "end",
+			ALLDAY,
+			color
+		FROM
+			EVENTS e 
+		where
+			username=#{id}
+		order by id desc
+    </select>
+    <!-- 3. 1개 가져오기 : 이벤트수정, 삭제 등 -->
+    <select id="selectById" parameterType="int" resultType="EventVO">
+       select * from events where id=#{id}
+    </select>
+    <!-- 4. 카테고리별 이벤트 가져오기 -->
+    <select id="selectByCategory" parameterType="string" resultType="EventsVO">
+       select * from events where category=#{category}
+    </select>  
+    <!-- 5. 저장 -->
+    <insert id="insert" parameterType="EventVO">
+       INSERT INTO EVENTS VALUES 
+       (event_id_seq.nextval, #{title}, #{username}, TO_DATE(#{startDate}, 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(#{endDate}, 'YYYY-MM-DD HH24:MI:SS'), #{category}, #{allDay}, #{color})
+    </insert>
+    <!-- 6. 수정 -->
+    <update id="update"  parameterType="EventVO">
+       update 
+          events
+       set
+          title = #{title}, 
+          username = #{username},
+          startDate=TO_DATE(#{startDate}, 'YYYY-MM-DD HH24:MI:SS'),
+          endDate=TO_DATE(#{endDate}, 'YYYY-MM-DD HH24:MI:SS'),
+          category=#{category},
+          allDay=#{allDay},
+          color=#{color}
+       where
+          id=#{id}
+    </update>
+    <!-- 7. 삭제 -->
+    <delete id="delete" parameterType="int">
+       delete from events where id=#{id}
+    </delete>	
+</mapper>
+
