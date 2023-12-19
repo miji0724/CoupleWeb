@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace는 반드시 DAO인터페이스와 이름이 일치해야 한다. -->
+<mapper namespace="kr.couple.web.dao.BucketListDAO">
+	<!-- 매퍼파일에 태그 1개당 DAO인터페이스의 메서드 1개를 만든다. -->
+	<!-- SQL명령 1개당 태그 1개씩을 추가한다. -->
+	
+	<!-- 1. 전체 개수 얻기 : 페이징 -->
+	<select id="selectCount"  parameterType="map" resultType="int">
+		select count(*)
+		from bucketList
+		where comcheck = '0'
+		and shared_id =#{shared_id}
+	</select>
+	<select id="selectCount2" parameterType="map" resultType="int">
+		select count(*)
+		from bucketList
+		where comcheck = '1'
+		and shared_id =#{shared_id}
+	</select>
+	<!-- 2. 1개 얻기 : 내용보기/수정/삭제 -->
+	<select id="selectById" parameterType="int" resultType="BucketListVO">
+		select *
+		from bucketList
+		where id = #{id}
+	</select>
+	<!-- 3. 1페이지 얻기 : 목록보기 -->
+	<select id="selectList" parameterType="map" resultType="BucketListVO">
+		select
+			Q.*
+		from
+			(select 
+				rownum rnum, R.*
+			from
+				(select * from bucketList where shared_id = #{shared_id} and comcheck = '0' order by id desc) R  -- 먼저 글을 번호 역순으로 가져오고
+			where
+				<![CDATA[
+					rownum <= #{endNo} -- 뒷자리 잘라내고
+				]]>
+			) Q
+		where 
+			<![CDATA[
+			rnum >= #{startNo} -- 앞자리 잘라내고
+			]]>
+	</select>
+	<select id="selectList2" parameterType="map" resultType="BucketListVO">
+		select
+			Q.*
+		from
+			(select 
+				rownum rnum, R.*
+			from
+				(select * from bucketList where shared_id = #{shared_id} and comcheck = '1' order by id desc) R  -- 먼저 글을 번호 역순으로 가져오고
+			where
+				<![CDATA[
+					rownum <= #{endNo} -- 뒷자리 잘라내고
+				]]>
+			) Q
+		where
+			<![CDATA[
+			rnum >= #{startNo} -- 앞자리 잘라내고
+			]]>
+	</select>
+	<!-- 4. 저장하기 -->
+	<insert id="insert" parameterType="BucketListVO" >
+		insert into bucketList 
+			(
+				id,
+				shared_id,
+				member_name,
+				content, 
+				regdate,
+				comcheck,
+				comdate
+			)
+		values 
+			(
+				bucketList_seq.nextval,
+				#{shared_id},
+				#{member_name},
+				#{content},
+				sysdate,
+				'0',
+				sysdate
+			)
+	</insert>
+	<!-- 5. 수정하기 멤버 네임 이름까지 넣음 -->
+	<update id="update" parameterType="BucketListVO">
+		update 
+			bucketList
+		set
+			member_name=#{member_name}, content=#{content}, regdate=sysdate, comdate=sysdate
+		where
+			id = #{id}
+	</update>
+	<!-- 6. 삭제하기 -->
+	<delete id="delete" parameterType="int">
+		delete from bucketList where id = #{id}
+	</delete>
+	
+	<!-- 7. 완료처리 -->
+	<update id="updateComcheck" parameterType="Map">
+		UPDATE BUCKETLIST
+		SET
+			comcheck=#{comcheck},
+		  	comdate=sysdate
+		WHERE id=#{id}
+	</update>
+	
+</mapper>
